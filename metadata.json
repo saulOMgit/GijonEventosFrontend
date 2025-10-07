@@ -1,0 +1,5 @@
+{
+  "name": "Gijón Eventos",
+  "description": "A modern, responsive web application for managing local events in Gijón. Users can register, log in, create events, and join events organized by others. The app is built with React and Tailwind CSS, featuring a clean and minimalist design.",
+  "requestFramePermissions": []
+}
