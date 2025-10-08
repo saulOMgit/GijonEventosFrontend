@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import EventList from './EventList';
 import Button from '../shared/Button';
 import EventFormModal from './EventFormModal';
+import ConfirmationModal from '../shared/ConfirmationModal';
 import { PlusIcon, CalendarIcon } from '../icons/Icons';
 
 const EventDashboard: React.FC = () => {
@@ -15,6 +16,8 @@ const EventDashboard: React.FC = () => {
     const [filter, setFilter] = useState<EventFilter>(EventFilter.ALL);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+    const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchEvents = useCallback(async () => {
         setLoading(true);
@@ -41,6 +44,25 @@ const EventDashboard: React.FC = () => {
         setEditingEvent(event);
         setIsModalOpen(true);
     }
+    
+    const handleRequestDelete = (event: Event) => {
+        setEventToDelete(event);
+    };
+    
+    const handleConfirmDelete = async () => {
+        if (!eventToDelete) return;
+
+        setIsDeleting(true);
+        try {
+            await api.deleteEvent(eventToDelete.id);
+            setEventToDelete(null);
+            fetchEvents(); // Refresh list
+        } catch (error) {
+            console.error("Failed to delete event", error);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -127,7 +149,7 @@ const EventDashboard: React.FC = () => {
                     events={filteredEvents} 
                     loading={loading} 
                     onEdit={handleEditEvent}
-                    onDelete={fetchEvents}
+                    onRequestDelete={handleRequestDelete}
                     onJoinLeave={fetchEvents}
                 />
             </div>
@@ -137,9 +159,22 @@ const EventDashboard: React.FC = () => {
                 onSuccess={handleSuccess}
                 event={editingEvent}
             />
+            <ConfirmationModal
+                isOpen={!!eventToDelete}
+                onClose={() => setEventToDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title="Confirmar Eliminación"
+                confirmButtonText="Eliminar"
+                loading={isDeleting}
+            >
+                <p className="text-sm text-gray-600">
+                    ¿Estás seguro de que quieres eliminar el evento 
+                    <span className="font-semibold"> "{eventToDelete?.title}"</span>?
+                    Esta acción no se puede deshacer.
+                </p>
+            </ConfirmationModal>
         </>
     );
 };
 
 export default EventDashboard;
-

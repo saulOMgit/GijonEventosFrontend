@@ -13,8 +13,8 @@ const App: React.FC = () => {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
                 <div className="text-center mb-8">
-                    <Logo className="h-12 w-auto mx-auto text-primary-600" />
-                    <h1 className="mt-4 text-2xl font-semibold text-gray-700">Gestión de Eventos</h1>
+                    <Logo className="h-12 w-auto mx-auto" />
+                    <h1 className="mt-4 text-2xl font-semibold text-gray-700">Gijón Eventos</h1>
                 </div>
                 <Auth />
             </div>

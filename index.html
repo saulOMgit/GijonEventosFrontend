@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gijón - Gestión de Eventos</title>
+    <title>Gijón Eventos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,30 +16,34 @@
         .font-logo {
             font-family: 'Pacifico', cursive;
         }
+        /* Fix for light calendar picker icon on light backgrounds */
+        input[type="datetime-local"] {
+            color-scheme: light;
+        }
     </style>
     <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#FCEBFO',
-              100: '#FADDE7',
-              200: '#F5BFD2',
-              300: '#F0A1BD',
-              400: '#EA83A7',
-              500: '#E56592',
-              600: '#B81D4F',
-              700: '#9E1945',
-              800: '#84153A',
-              900: '#6A112F',
-              950: '#470B1F'
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                primary: {
+                  50: '#fef2f5',
+                  100: '#fee6ec',
+                  200: '#fecddc',
+                  300: '#fca9c2',
+                  400: '#f87ea1',
+                  500: '#e8527e',
+                  600: '#B81D4F',
+                  700: '#9f1944',
+                  800: '#891a3e',
+                  900: '#731836',
+                  950: '#500820',
+                },
+              }
             }
           }
         }
-      }
-    }
-  </script>
+    </script>
 <script type="importmap">
 {
   "imports": {

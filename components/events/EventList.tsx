@@ -8,11 +8,11 @@ interface EventListProps {
     events: Event[];
     loading: boolean;
     onEdit: (event: Event) => void;
-    onDelete: () => void;
+    onRequestDelete: (event: Event) => void;
     onJoinLeave: () => void;
 }
 
-const EventList: React.FC<EventListProps> = ({ events, loading, onEdit, onDelete, onJoinLeave }) => {
+const EventList: React.FC<EventListProps> = ({ events, loading, onEdit, onRequestDelete, onJoinLeave }) => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -37,7 +37,7 @@ const EventList: React.FC<EventListProps> = ({ events, loading, onEdit, onDelete
                     key={event.id} 
                     event={event} 
                     onEdit={onEdit} 
-                    onDelete={onDelete} 
+                    onRequestDelete={onRequestDelete} 
                     onJoinLeave={onJoinLeave} 
                 />
             ))}
