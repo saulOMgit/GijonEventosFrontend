@@ -5,6 +5,7 @@ import Auth from './components/auth/Auth';
 import EventDashboard from './components/events/EventDashboard';
 import Header from './components/layout/Header';
 import Logo from './components/icons/Logo';
+import Footer from './components/layout/Footer';
 
 const App: React.FC = () => {
     const { user } = useAuth();
@@ -22,11 +23,12 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 flex flex-col">
             <Header />
-            <main>
+            <main className="flex-grow">
                 <EventDashboard />
             </main>
+            <Footer />
         </div>
     );
 };
