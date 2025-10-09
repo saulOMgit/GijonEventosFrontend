@@ -24,8 +24,8 @@ const EventList: React.FC<EventListProps> = ({ events, loading, onEdit, onReques
     if (events.length === 0) {
         return (
             <div className="text-center py-16">
-                <h3 className="text-lg font-medium text-gray-900">No se encontraron eventos</h3>
-                <p className="mt-1 text-sm text-gray-500">Prueba a cambiar de filtro o crea un nuevo evento.</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No se encontraron eventos</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Prueba a cambiar de filtro o crea un nuevo evento.</p>
             </div>
         );
     }
