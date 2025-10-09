@@ -16,13 +16,17 @@
         .font-logo {
             font-family: 'Pacifico', cursive;
         }
-        /* Fix for light calendar picker icon on light backgrounds */
-        input[type="datetime-local"] {
-            color-scheme: light;
-        }
     </style>
     <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+
         tailwind.config = {
+          darkMode: 'class',
           theme: {
             extend: {
               colors: {
@@ -56,7 +60,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 dark:bg-gray-900">
 <div id="root"></div>
 <script type="module" src="/index.tsx"></script>
 </body>

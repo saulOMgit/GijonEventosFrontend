@@ -17,13 +17,11 @@ const Logo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
                   font-weight: 500;
                   fill: #4b5563;
               }
-              @media (prefers-color-scheme: dark) {
-                .logo-text-gijon {
-                   fill: #D94674;
-                }
-                .logo-text-eventos {
-                    fill: #d1d5db;
-                }
+              .dark .logo-text-gijon {
+                 fill: #f87ea1;
+              }
+              .dark .logo-text-eventos {
+                  fill: #d1d5db;
               }
             `}
           </style>
