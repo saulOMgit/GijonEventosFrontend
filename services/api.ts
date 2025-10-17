@@ -1,5 +1,4 @@
-
-import { User, Event, NewEventData } from '../types';
+import { User, Event, NewEventData, RegisterData } from '../types';
 
 // --- MOCK DATABASE ---
 let users: (User & { passwordHash: string })[] = [
@@ -47,30 +46,91 @@ const simulateNetwork = (delay = 500) => new Promise(res => setTimeout(res, dela
 
 // --- AUTH ---
 export const login = async (email: string, password: string): Promise<User> => {
-    await simulateNetwork();
-    const user = users.find(u => u.email === email);
-    if (user && user.passwordHash === password) {
-        const { passwordHash, ...userWithoutPass } = user;
-        return userWithoutPass;
+    const headers = new Headers();
+    // La autenticación HTTP Basic envía las credenciales en la cabecera 'Authorization'
+    headers.set('Authorization', 'Basic ' + btoa(email + ":" + password));
+    headers.set('Content-Type', 'application/json');
+
+    const response = await fetch('http://localhost:8080/api/v1/login', {
+        method: 'POST',
+        headers: headers,
+    });
+
+    if (!response.ok) {
+        if (response.status === 401) { // 401 Unauthorized es el error estándar para credenciales incorrectas
+            throw new Error('Email o contraseña incorrectos.');
+        }
+        
+        let errorMessage = 'Error en el inicio de sesión.';
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+            errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
     }
-    throw new Error('Email o contraseña incorrectos.');
+
+    const responseData = await response.json();
+
+    if (!responseData.id || !responseData.fullName || !responseData.email) {
+        throw new Error("Respuesta de login inválida del servidor.");
+    }
+    
+    // Asumimos que el backend devuelve los datos del usuario al hacer login correctamente
+    const loggedInUser: User = {
+        id: responseData.id,
+        name: responseData.fullName,
+        email: responseData.email,
+    };
+
+    return loggedInUser;
 };
 
-export const register = async (name: string, email: string, password: string): Promise<User> => {
-    await simulateNetwork();
-    if (users.some(u => u.email === email)) {
-        throw new Error('El email ya está en uso.');
-    }
-    const newUser = {
-        id: String(Date.now()),
-        name,
-        email,
-        passwordHash: password,
+export const register = async (data: RegisterData): Promise<User> => {
+    const payload = {
+        username: data.username,
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        confirmPassword: data.password,
     };
-    users.push(newUser);
-    const { passwordHash, ...userWithoutPass } = newUser;
-    return userWithoutPass;
+
+    const response = await fetch('http://localhost:8080/api/v1/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        let errorMessage = 'Error en el registro.';
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+            errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
+    }
+
+    const responseData = await response.json();
+
+    if (!responseData.id || !responseData.fullName || !responseData.email) {
+        throw new Error("Respuesta de registro inválida del servidor.");
+    }
+
+    const newUser: User = {
+        id: responseData.id,
+        name: responseData.fullName,
+        email: responseData.email,
+    };
+
+    return newUser;
 };
+
 
 // --- EVENTS ---
 export const getEvents = async (): Promise<Event[]> => {
