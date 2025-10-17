@@ -4,7 +4,7 @@ import * as api from '../services/api';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, pass: string) => Promise<void>;
+    login: (username: string, pass: string) => Promise<void>;
     register: (data: RegisterData) => Promise<void>;
     logout: () => void;
     loading: boolean;
@@ -34,11 +34,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw err;
     };
 
-    const login = useCallback(async (email: string, pass: string) => {
+    const login = useCallback(async (username: string, pass: string) => {
         setLoading(true);
         setError(null);
         try {
-            const loggedInUser = await api.login(email, pass);
+            const loggedInUser = await api.login(username, pass);
             setUser(loggedInUser);
             localStorage.setItem('user', JSON.stringify(loggedInUser));
         } catch (err: any) {

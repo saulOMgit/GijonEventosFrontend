@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../shared/Button';
 
 type Inputs = {
-    email: string;
+    username: string;
     contrasena: string;
 };
 
@@ -15,7 +14,7 @@ const LoginForm: React.FC = () => {
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         try {
-            await login(data.email, data.contrasena);
+            await login(data.username, data.contrasena);
         } catch (err) {
             // Error is handled in the auth hook and displayed
             console.error(err);
@@ -25,16 +24,16 @@ const LoginForm: React.FC = () => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
                 <input
-                    id="email"
-                    type="email"
-                    defaultValue="admin@email.com"
-                    {...register("email", { required: "El email es obligatorio" })}
+                    id="username"
+                    type="text"
+                    defaultValue="adminuser"
+                    {...register("username", { required: "El nombre de usuario es obligatorio" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
-                    placeholder="tu@email.com"
+                    placeholder="tu_usuario"
                 />
-                {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
+                {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username.message}</p>}
             </div>
             <div>
                 <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>

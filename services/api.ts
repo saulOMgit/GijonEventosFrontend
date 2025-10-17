@@ -45,20 +45,19 @@ let events: Event[] = [
 const simulateNetwork = (delay = 500) => new Promise(res => setTimeout(res, delay));
 
 // --- AUTH ---
-export const login = async (email: string, password: string): Promise<User> => {
+export const login = async (username: string, password: string): Promise<User> => {
     const headers = new Headers();
     // La autenticación HTTP Basic envía las credenciales en la cabecera 'Authorization'
-    headers.set('Authorization', 'Basic ' + btoa(email + ":" + password));
-    headers.set('Content-Type', 'application/json');
+    headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
 
     const response = await fetch('http://localhost:8080/api/v1/login', {
-        method: 'POST',
+        method: 'GET',
         headers: headers,
     });
 
     if (!response.ok) {
         if (response.status === 401) { // 401 Unauthorized es el error estándar para credenciales incorrectas
-            throw new Error('Email o contraseña incorrectos.');
+            throw new Error('Usuario o contraseña incorrectos.');
         }
         
         let errorMessage = 'Error en el inicio de sesión.';
