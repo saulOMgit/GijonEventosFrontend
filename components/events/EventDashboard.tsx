@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import * as api from '../../services/api';
 import { Event, EventFilter } from '../../types';
@@ -20,16 +19,19 @@ const EventDashboard: React.FC = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchEvents = useCallback(async () => {
+        if (!user) return;
+        
         setLoading(true);
         try {
-            const fetchedEvents = await api.getEvents();
+            // Siempre traemos TODOS los eventos del backend, el filtrado lo hacemos en el frontend
+            const fetchedEvents = await api.getEvents(EventFilter.ALL, user.id);
             setEvents(fetchedEvents);
         } catch (error) {
             console.error("Failed to fetch events", error);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         fetchEvents();

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Event } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
@@ -22,14 +21,22 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onRequestDelete, o
 
     const handleJoin = async () => {
         if (!user) return;
-        await api.joinEvent(event.id, user.id);
-        onJoinLeave();
+        try {
+            await api.joinEvent(event.id, user.id);
+            onJoinLeave();
+        } catch (error) {
+            console.error('Error joining event:', error);
+        }
     };
 
     const handleLeave = async () => {
         if (!user) return;
-        await api.leaveEvent(event.id, user.id);
-        onJoinLeave();
+        try {
+            await api.leaveEvent(event.id, user.id);
+            onJoinLeave();
+        } catch (error) {
+            console.error('Error leaving event:', error);
+        }
     };
 
     const formattedDate = new Date(event.date).toLocaleDateString('es-ES', {

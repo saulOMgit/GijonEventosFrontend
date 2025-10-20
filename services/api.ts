@@ -7,6 +7,28 @@ const API_URL = 'http://localhost:8080/api/v1';
 const encodeCredentials = (username: string, password: string) =>
     btoa(`${username}:${password}`);
 
+// Función para obtener las credenciales del sessionStorage
+const getCredentials = (): { username: string; password: string } | null => {
+    try {
+        const storedCreds = sessionStorage.getItem('credentials');
+        return storedCreds ? JSON.parse(storedCreds) : null;
+    } catch {
+        return null;
+    }
+};
+
+// Función auxiliar para obtener headers con autenticación
+const getAuthHeaders = (): HeadersInit => {
+    const creds = getCredentials();
+    if (!creds) {
+        throw new Error('No hay credenciales disponibles. Por favor, inicia sesión.');
+    }
+    return {
+        'Authorization': `Basic ${encodeCredentials(creds.username, creds.password)}`,
+        'Content-Type': 'application/json',
+    };
+};
+
 // Función auxiliar para manejar errores de la API
 const handleApiError = async (response: Response) => {
     if (!response.ok) {
@@ -29,7 +51,7 @@ export const login = async (username: string, password: string): Promise<User> =
     const data = await response.json();
     return {
         id: data.id,
-        name: data.fullName, // Mapeamos fullName a name
+        name: data.fullName,
         username: data.username,
         email: data.email,
         phone: data.phone,
@@ -49,18 +71,18 @@ export const register = async (data: RegisterData): Promise<User> => {
             email: data.email,
             phone: data.phone,
             password: data.password,
-            confirmPassword: data.confirmPassword, // Añadido
+            confirmPassword: data.confirmPassword,
         }),
     });
     await handleApiError(response);
     const responseData = await response.json();
     return {
         id: responseData.id,
-        name: responseData.fullName, // Mapeamos fullName a name
+        name: responseData.fullName,
         username: responseData.username,
         email: responseData.email,
         phone: responseData.phone,
-        role: 'ROLE_USER', // RegisterDTOResponse no incluye role, asignamos por defecto
+        role: 'ROLE_USER',
     };
 };
 
@@ -73,10 +95,7 @@ export const getEvents = async (filter: EventFilter = EventFilter.ALL, userId: s
     }[filter];
     const response = await fetch(`${API_URL}/events?filter=${backendFilter}&userId=${userId}`, {
         method: 'GET',
-        headers: {
-            'Authorization': `Basic ${encodeCredentials('daisy', 'password')}`, // Reemplazar con credenciales del usuario logueado
-            'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
     });
     await handleApiError(response);
     const data = await response.json();
@@ -88,13 +107,13 @@ export const getEvents = async (filter: EventFilter = EventFilter.ALL, userId: s
         location: event.location,
         organizer: {
             id: event.organizer.id,
-            name: event.organizer.fullName, // Mapeamos fullName a name
+            name: event.organizer.fullName,
             username: event.organizer.username,
             email: event.organizer.email,
             phone: event.organizer.phone,
             role: event.organizer.role || '',
         },
-        attendees: event.attendees.map((user: any) => user.id),
+        attendees: event.attendees, // Backend devuelve array de IDs directamente
         maxAttendees: event.maxAttendees,
     }));
 };
@@ -102,10 +121,7 @@ export const getEvents = async (filter: EventFilter = EventFilter.ALL, userId: s
 export const createEvent = async (eventData: NewEventData, organizerId: string): Promise<Event> => {
     const response = await fetch(`${API_URL}/events`, {
         method: 'POST',
-        headers: {
-            'Authorization': `Basic ${encodeCredentials('daisy', 'password')}`, // Reemplazar con credenciales del usuario logueado
-            'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
             title: eventData.title,
             description: eventData.description,
@@ -125,13 +141,13 @@ export const createEvent = async (eventData: NewEventData, organizerId: string):
         location: data.location,
         organizer: {
             id: data.organizer.id,
-            name: data.organizer.fullName, // Mapeamos fullName a name
+            name: data.organizer.fullName,
             username: data.organizer.username,
             email: data.organizer.email,
             phone: data.organizer.phone,
             role: data.organizer.role || '',
         },
-        attendees: data.attendees.map((user: any) => user.id),
+        attendees: data.attendees, // Backend devuelve array de IDs directamente
         maxAttendees: data.maxAttendees,
     };
 };
@@ -139,10 +155,7 @@ export const createEvent = async (eventData: NewEventData, organizerId: string):
 export const updateEvent = async (eventId: string, eventData: NewEventData): Promise<Event> => {
     const response = await fetch(`${API_URL}/events/${eventId}`, {
         method: 'PUT',
-        headers: {
-            'Authorization': `Basic ${encodeCredentials('daisy', 'password')}`, // Reemplazar con credenciales del usuario logueado
-            'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(eventData),
     });
     await handleApiError(response);
@@ -155,7 +168,7 @@ export const updateEvent = async (eventId: string, eventData: NewEventData): Pro
         location: data.location,
         organizer: {
             id: data.organizer.id,
-            name: data.organizer.fullName, // Mapeamos fullName a name
+            name: data.organizer.fullName,
             username: data.organizer.username,
             email: data.organizer.email,
             phone: data.organizer.phone,
@@ -169,78 +182,26 @@ export const updateEvent = async (eventId: string, eventData: NewEventData): Pro
 export const deleteEvent = async (eventId: string): Promise<void> => {
     const response = await fetch(`${API_URL}/events/${eventId}`, {
         method: 'DELETE',
-        headers: {
-            'Authorization': `Basic ${encodeCredentials('daisy', 'password')}`, // Reemplazar con credenciales del usuario logueado
-            'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
     });
     await handleApiError(response);
 };
 
 export const joinEvent = async (eventId: string, userId: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/events/${eventId}/attendees/${userId}`, {
+    const response = await fetch(`${API_URL}/events/${eventId}/join`, {
         method: 'POST',
-        headers: {
-            'Authorization': `Basic ${encodeCredentials('daisy', 'password')}`, // Reemplazar con credenciales del usuario logueado
-            'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
     });
     await handleApiError(response);
 };
 
 export const leaveEvent = async (eventId: string, userId: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/events/${eventId}/attendees/${userId}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Basic ${encodeCredentials('daisy', 'password')}`, // Reemplazar con credenciales del usuario logueado
-            'Content-Type': 'application/json',
-        },
+    const response = await fetch(`${API_URL}/events/${eventId}/leave`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
     });
     await handleApiError(response);
 };
-
-// --- MOCK DATABASE (para pruebas locales, sin daisy/donald) ---
-const mockUsers: (User & { passwordHash: string })[] = [
-    {
-        id: '1',
-        name: 'Test Admin',
-        username: 'testadmin',
-        email: 'testadmin@example.com',
-        phone: '123456789',
-        role: 'ROLE_ADMIN',
-        passwordHash: 'testpassword',
-    },
-    {
-        id: '2',
-        name: 'Test User',
-        username: 'testuser',
-        email: 'testuser@example.com',
-        phone: '987654321',
-        role: 'ROLE_USER',
-        passwordHash: 'testpassword',
-    },
-];
-
-let mockEvents: Event[] = [
-    {
-        id: 'evt1',
-        title: 'Test Concert',
-        description: 'A test concert event.',
-        date: '2025-11-15T21:00:00',
-        location: 'Test Venue',
-        organizer: {
-            id: '1',
-            name: 'Test Admin',
-            username: 'testadmin',
-            email: 'testadmin@example.com',
-            phone: '123456789',
-            role: 'ROLE_ADMIN',
-        },
-        attendees: ['2'],
-        maxAttendees: 100,
-    },
-];
-
 // Mock functions (para pruebas locales, descomentar si el backend no está disponible)
 /*
 export const login = async (username: string, password: string): Promise<User> => {
