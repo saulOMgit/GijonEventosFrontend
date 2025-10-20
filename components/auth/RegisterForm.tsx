@@ -25,7 +25,8 @@ const RegisterForm: React.FC = () => {
                 username: data.username,
                 email: data.email,
                 phone: data.phone,
-                password: data.contrasena
+                password: data.contrasena,
+                confirmPassword: data.confirmPassword
             };
             await registerUser(registerData);
         } catch (err) {
