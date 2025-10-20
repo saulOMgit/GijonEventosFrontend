@@ -29,3 +29,11 @@ export enum EventFilter {
     ATTENDING = 'Mis Asistencias',
     ORGANIZED = 'Organizados',
 }
+
+export interface RegisterData {
+    fullName: string;
+    username: string;
+    email: string;
+    phone: string;
+    password: string;
+}
