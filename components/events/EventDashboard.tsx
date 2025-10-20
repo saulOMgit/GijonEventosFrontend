@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import EventList from './EventList';
 import Button from '../shared/Button';
 import EventFormModal from './EventFormModal';
+import ConfirmationModal from '../shared/ConfirmationModal';
 import { PlusIcon, CalendarIcon } from '../icons/Icons';
 
 const EventDashboard: React.FC = () => {
@@ -15,6 +16,8 @@ const EventDashboard: React.FC = () => {
     const [filter, setFilter] = useState<EventFilter>(EventFilter.ALL);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+    const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchEvents = useCallback(async () => {
         setLoading(true);
@@ -41,6 +44,25 @@ const EventDashboard: React.FC = () => {
         setEditingEvent(event);
         setIsModalOpen(true);
     }
+    
+    const handleRequestDelete = (event: Event) => {
+        setEventToDelete(event);
+    };
+    
+    const handleConfirmDelete = async () => {
+        if (!eventToDelete) return;
+
+        setIsDeleting(true);
+        try {
+            await api.deleteEvent(eventToDelete.id);
+            setEventToDelete(null);
+            fetchEvents(); // Refresh list
+        } catch (error) {
+            console.error("Failed to delete event", error);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -83,15 +105,15 @@ const EventDashboard: React.FC = () => {
     return (
         <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="md:flex md:items-center md:justify-between pb-6 border-b border-gray-200">
+                <div className="md:flex md:items-center md:justify-between pb-6 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center">
-                            <CalendarIcon className="h-8 w-8 text-primary-600 mr-3" />
+                            <CalendarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3" />
                             <div>
-                                <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                                <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:text-3xl sm:truncate">
                                     Eventos en Gijón
                                 </h2>
-                                <p className="mt-1 text-sm text-gray-500">Descubre y participa en eventos locales</p>
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Descubre y participa en eventos locales</p>
                             </div>
                         </div>
                     </div>
@@ -104,7 +126,7 @@ const EventDashboard: React.FC = () => {
                 </div>
 
                 <div className="mt-6">
-                    <div className="border-b border-gray-200">
+                    <div className="border-b border-gray-200 dark:border-gray-700">
                         <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                             {Object.values(EventFilter).map((tab) => (
                                 <button
@@ -112,8 +134,8 @@ const EventDashboard: React.FC = () => {
                                     onClick={() => setFilter(tab)}
                                     className={`${
                                         filter === tab
-                                            ? 'border-primary-500 text-primary-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            ? 'border-primary-500 dark:border-primary-400 text-primary-600 dark:text-primary-400'
+                                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500'
                                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
                                 >
                                     {tab} ({getFilterCount(tab)})
@@ -127,7 +149,7 @@ const EventDashboard: React.FC = () => {
                     events={filteredEvents} 
                     loading={loading} 
                     onEdit={handleEditEvent}
-                    onDelete={fetchEvents}
+                    onRequestDelete={handleRequestDelete}
                     onJoinLeave={fetchEvents}
                 />
             </div>
@@ -137,9 +159,22 @@ const EventDashboard: React.FC = () => {
                 onSuccess={handleSuccess}
                 event={editingEvent}
             />
+            <ConfirmationModal
+                isOpen={!!eventToDelete}
+                onClose={() => setEventToDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title="Confirmar Eliminación"
+                confirmButtonText="Eliminar"
+                loading={isDeleting}
+            >
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                    ¿Estás seguro de que quieres eliminar el evento 
+                    <span className="font-semibold text-gray-800 dark:text-gray-100"> "{eventToDelete?.title}"</span>?
+                    Esta acción no se puede deshacer.
+                </p>
+            </ConfirmationModal>
         </>
     );
 };
 
 export default EventDashboard;
-
