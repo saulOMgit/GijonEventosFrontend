@@ -23,7 +23,6 @@ const EventDashboard: React.FC = () => {
         
         setLoading(true);
         try {
-            // Siempre traemos TODOS los eventos del backend, el filtrado lo hacemos en el frontend
             const fetchedEvents = await api.getEvents(EventFilter.ALL, user.id);
             setEvents(fetchedEvents);
         } catch (error) {
@@ -58,7 +57,7 @@ const EventDashboard: React.FC = () => {
         try {
             await api.deleteEvent(eventToDelete.id);
             setEventToDelete(null);
-            fetchEvents(); // Refresh list
+            fetchEvents();
         } catch (error) {
             console.error("Failed to delete event", error);
         } finally {
@@ -73,7 +72,7 @@ const EventDashboard: React.FC = () => {
 
     const handleSuccess = () => {
         handleCloseModal();
-        fetchEvents(); // Refresh list after success
+        fetchEvents();
     };
     
     const filteredEvents = events.filter(event => {
@@ -107,20 +106,20 @@ const EventDashboard: React.FC = () => {
     return (
         <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="md:flex md:items-center md:justify-between pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-gray-200 dark:border-gray-700 gap-4">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center">
-                            <CalendarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3" />
+                            <CalendarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3 flex-shrink-0" />
                             <div>
-                                <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:text-3xl sm:truncate">
+                                <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:text-3xl">
                                     Eventos en Gijón
                                 </h2>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Descubre y participa en eventos locales</p>
                             </div>
                         </div>
                     </div>
-                    <div className="mt-4 flex md:mt-0 md:ml-4">
-                        <Button onClick={handleCreateEvent}>
+                    <div className="flex sm:ml-4">
+                        <Button onClick={handleCreateEvent} fullWidth>
                             <PlusIcon className="w-5 h-5 mr-2" />
                             Crear Evento
                         </Button>
@@ -129,7 +128,7 @@ const EventDashboard: React.FC = () => {
 
                 <div className="mt-6">
                     <div className="border-b border-gray-200 dark:border-gray-700">
-                        <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                        <nav className="-mb-px flex" aria-label="Tabs">
                             {Object.values(EventFilter).map((tab) => (
                                 <button
                                     key={tab}
@@ -138,9 +137,10 @@ const EventDashboard: React.FC = () => {
                                         filter === tab
                                             ? 'border-primary-500 dark:border-primary-400 text-primary-600 dark:text-primary-400'
                                             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500'
-                                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                                    } flex-1 py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors text-center`}
                                 >
-                                    {tab} ({getFilterCount(tab)})
+                                    <span className="hidden sm:inline">{tab} ({getFilterCount(tab)})</span>
+                                    <span className="sm:hidden">{tab.split(' ')[0]} ({getFilterCount(tab)})</span>
                                 </button>
                             ))}
                         </nav>
