@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Event, NewEventData } from '../../types';
@@ -55,6 +54,12 @@ const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose, onSucc
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
+    // Función para convertir datetime-local a formato del backend (YYYY-MM-DDTHH:MM:SS)
+    const formatDateForBackend = (dateString: string): string => {
+        // dateString viene en formato: "2025-10-20T14:50" (datetime-local)
+        // El backend espera: "2025-10-20T14:50:00"
+        return `${dateString}:00`;
+    };
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         if (!user) return;
@@ -62,13 +67,13 @@ const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose, onSucc
         try {
             const eventData: NewEventData = {
                 ...data,
-                date: new Date(data.date).toISOString(),
+                date: formatDateForBackend(data.date), // Formato correcto para el backend
                 maxAttendees: Number(data.maxAttendees)
             };
             if (event) {
                 await api.updateEvent(event.id, eventData);
             } else {
-                await api.createEvent(eventData, user);
+                await api.createEvent(eventData, user.id); // Pasar solo el ID
             }
             onSuccess();
         } catch (error) {
@@ -80,7 +85,6 @@ const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose, onSucc
     
     const inputClasses = "mt-1 block w-full px-3 py-2 border bg-gray-50 text-gray-900 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-500 dark:focus:ring-primary-400 dark:focus:border-primary-400";
     const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300";
-
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={event ? 'Editar Evento' : 'Crear Nuevo Evento'}>

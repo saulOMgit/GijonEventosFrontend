@@ -4,6 +4,7 @@ import * as api from '../services/api';
 
 interface AuthContextType {
     user: User | null;
+    credentials: { username: string; password: string } | null;
     login: (username: string, pass: string) => Promise<void>;
     register: (data: RegisterData) => Promise<void>;
     logout: () => void;
@@ -22,6 +23,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return null;
         }
     });
+    
+    const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(() => {
+        try {
+            const storedCreds = sessionStorage.getItem('credentials');
+            return storedCreds ? JSON.parse(storedCreds) : null;
+        } catch {
+            return null;
+        }
+    });
+    
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     
@@ -41,6 +52,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const loggedInUser = await api.login(username, pass);
             setUser(loggedInUser);
             localStorage.setItem('user', JSON.stringify(loggedInUser));
+            
+            // Guardar credenciales en sessionStorage (se borran al cerrar el navegador)
+            const creds = { username, password: pass };
+            setCredentials(creds);
+            sessionStorage.setItem('credentials', JSON.stringify(creds));
         } catch (err: any) {
             handleApiError(err);
         } finally {
@@ -55,6 +71,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const newUser = await api.register(data);
             setUser(newUser);
             localStorage.setItem('user', JSON.stringify(newUser));
+            
+            // Guardar credenciales después del registro
+            const creds = { username: data.username, password: data.password };
+            setCredentials(creds);
+            sessionStorage.setItem('credentials', JSON.stringify(creds));
         } catch (err: any) {
             handleApiError(err);
         } finally {
@@ -64,11 +85,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const logout = useCallback(() => {
         setUser(null);
+        setCredentials(null);
         localStorage.removeItem('user');
+        sessionStorage.removeItem('credentials');
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>
+        <AuthContext.Provider value={{ user, credentials, login, register, logout, loading, error }}>
             {children}
         </AuthContext.Provider>
     );
