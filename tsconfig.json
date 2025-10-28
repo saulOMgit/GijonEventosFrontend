@@ -11,7 +11,8 @@
     ],
     "skipLibCheck": true,
     "types": [
-      "node"
+      "node",
+      "vitest/globals"  // AÑADIDO: tipos globales de Vitest (vi, describe, it, expect...)
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,
@@ -25,5 +26,12 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "vitest.d.ts",           // AÑADIDO: archivo de tipos globales
+    "setupTests.ts",         // AÑADIDO: para @testing-library/jest-dom
+    "__tests__/**/*"         // AÑADIDO: incluye todos los tests
+  ]
 }
