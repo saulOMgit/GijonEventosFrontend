@@ -14,6 +14,7 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 'md', color = 'currentColor' }
     };
     return (
         <svg
+            data-testid="spinner"
             className={`animate-spin ${sizeClasses[size]}`}
             style={{ color }}
             xmlns="http://www.w3.org/2000/svg"
