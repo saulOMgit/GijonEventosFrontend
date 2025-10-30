@@ -32,6 +32,9 @@ const getAuthHeaders = (): HeadersInit => {
 // Función auxiliar para manejar errores de la API
 const handleApiError = async (response: Response) => {
     if (!response.ok) {
+        if (response.status === 401) {
+            throw new Error('Error 401: El nombre de usuario o la contraseña no son correctos. Por favor, verifica tus credenciales e inténtalo de nuevo.');
+        }
         const error = await response.text();
         throw new Error(error || `Error ${response.status}: ${response.statusText}`);
     }

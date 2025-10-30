@@ -55,7 +55,7 @@ Follow these instructions to set up the project locally.
     ```bash
     npm run dev
     ```
-    This command will start the Vite development server, and you can view the application in your browser at the provided local URL (usually `http://localhost:5173`).
+    This command will start the Vite development server, and you can view the application in your browser at the provided local URL (usually `http://localhost:3000`).
 
 ## Project Structure
 Below is an overview of the main directories and files in the Gijón Eventos project:
