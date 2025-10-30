@@ -43,7 +43,7 @@ const RegisterForm: React.FC = () => {
                     type="text"
                     {...register("nombre", { required: "El nombre es obligatorio" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
-                    placeholder="Usuario de Prueba"
+                    placeholder="Nombre"
                 />
                 {errors.nombre && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nombre.message}</p>}
             </div>
@@ -54,7 +54,7 @@ const RegisterForm: React.FC = () => {
                     type="text"
                     {...register("username", { required: "El nombre de usuario es obligatorio" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
-                    placeholder="usuario1"
+                    placeholder="Usuario"
                 />
                 {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username.message}</p>}
             </div>
@@ -65,7 +65,7 @@ const RegisterForm: React.FC = () => {
                     type="email"
                     {...register("email", { required: "El email es obligatorio" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
-                    placeholder="usuario1@mail.com"
+                    placeholder="usuario@mail.com"
                 />
                 {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
             </div>
@@ -76,7 +76,7 @@ const RegisterForm: React.FC = () => {
                     type="tel"
                     {...register("phone", { required: "El teléfono es obligatorio" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
-                    placeholder="123456789"
+                    placeholder="603121996"
                 />
                 {errors.phone && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone.message}</p>}
             </div>
