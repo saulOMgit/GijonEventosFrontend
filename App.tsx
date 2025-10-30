@@ -15,7 +15,7 @@ const App: React.FC = () => {
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center p-4">
                 <div className="text-center mb-8">
                     <Logo className="h-12 w-auto mx-auto" />
-                    <h1 className="mt-4 text-2xl font-semibold text-gray-700 dark:text-gray-200">Gijón Eventos</h1>
+                    {/* <h1 className="mt-4 text-2xl font-semibold text-gray-700 dark:text-gray-200">Gijón Eventos</h1> */}
                 </div>
                 <Auth />
             </div>
