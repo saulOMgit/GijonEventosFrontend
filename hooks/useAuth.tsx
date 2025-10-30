@@ -1,12 +1,12 @@
-
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
-import { User } from '../types';
+import { User, RegisterData } from '../types';
 import * as api from '../services/api';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, pass: string) => Promise<void>;
-    register: (name: string, email: string, pass: string) => Promise<void>;
+    credentials: { username: string; password: string } | null;
+    login: (username: string, pass: string) => Promise<void>;
+    register: (data: RegisterData) => Promise<void>;
     logout: () => void;
     loading: boolean;
     error: string | null;
@@ -23,34 +23,61 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return null;
         }
     });
+    
+    const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(() => {
+        try {
+            const storedCreds = sessionStorage.getItem('credentials');
+            return storedCreds ? JSON.parse(storedCreds) : null;
+        } catch {
+            return null;
+        }
+    });
+    
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    
+    const handleApiError = (err: any) => {
+        if (err instanceof TypeError && err.message === 'Failed to fetch') {
+            setError('No se pudo conectar con el servidor. Verifica que el backend esté funcionando y la configuración de CORS sea correcta.');
+        } else {
+            setError(err.message);
+        }
+        throw err;
+    };
 
-    const login = useCallback(async (email: string, pass: string) => {
+    const login = useCallback(async (username: string, pass: string) => {
         setLoading(true);
         setError(null);
         try {
-            const loggedInUser = await api.login(email, pass);
+            const loggedInUser = await api.login(username, pass);
             setUser(loggedInUser);
             localStorage.setItem('user', JSON.stringify(loggedInUser));
+            
+            // Guardar credenciales en sessionStorage (se borran al cerrar el navegador)
+            const creds = { username, password: pass };
+            setCredentials(creds);
+            sessionStorage.setItem('credentials', JSON.stringify(creds));
         } catch (err: any) {
-            setError(err.message);
-            throw err;
+            handleApiError(err);
         } finally {
             setLoading(false);
         }
     }, []);
 
-    const register = useCallback(async (name: string, email: string, pass: string) => {
+    const register = useCallback(async (data: RegisterData) => {
         setLoading(true);
         setError(null);
         try {
-            const newUser = await api.register(name, email, pass);
+            const newUser = await api.register(data);
             setUser(newUser);
             localStorage.setItem('user', JSON.stringify(newUser));
+            
+            // Guardar credenciales después del registro
+            const creds = { username: data.username, password: data.password };
+            setCredentials(creds);
+            sessionStorage.setItem('credentials', JSON.stringify(creds));
         } catch (err: any) {
-            setError(err.message);
-            throw err;
+            handleApiError(err);
         } finally {
             setLoading(false);
         }
@@ -58,11 +85,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const logout = useCallback(() => {
         setUser(null);
+        setCredentials(null);
         localStorage.removeItem('user');
+        sessionStorage.removeItem('credentials');
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>
+        <AuthContext.Provider value={{ user, credentials, login, register, logout, loading, error }}>
             {children}
         </AuthContext.Provider>
     );
