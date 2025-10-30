@@ -10,6 +10,7 @@ interface AuthContextType {
     logout: () => void;
     loading: boolean;
     error: string | null;
+    clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -90,8 +91,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sessionStorage.removeItem('credentials');
     }, []);
 
+     const clearError = useCallback(() => {
+        setError(null);
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user, credentials, login, register, logout, loading, error }}>
+        <AuthContext.Provider value={{ user, credentials, login, register, logout, loading, error, clearError }}>
             {children}
         </AuthContext.Provider>
     );
