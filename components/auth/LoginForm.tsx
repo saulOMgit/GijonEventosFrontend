@@ -28,10 +28,9 @@ const LoginForm: React.FC = () => {
                 <input
                     id="username"
                     type="text"
-                    defaultValue="adminuser"
                     {...register("username", { required: "El nombre de usuario es obligatorio" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
-                    placeholder="tu_usuario"
+                    placeholder="tu usuario"
                 />
                 {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username.message}</p>}
             </div>
@@ -40,7 +39,6 @@ const LoginForm: React.FC = () => {
                 <input
                     id="contrasena"
                     type="password"
-                    defaultValue="password123"
                     {...register("contrasena", { required: "La contraseña es obligatoria" })}
                     className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 sm:text-sm"
                     placeholder="********"

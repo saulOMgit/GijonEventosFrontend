@@ -1,11 +1,22 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
+import { useAuth } from '../../hooks/useAuth';
 
 const Auth: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
+    const { clearError } = useAuth();
 
+    useEffect(() => {
+        clearError();
+    }, [isLogin, clearError]);
+
+    const handleTabChange = (isLoginTab: boolean) => {
+        if (isLogin !== isLoginTab) {
+            setIsLogin(isLoginTab);
+        }
+    };
     return (
         <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 md:p-8">
             <div className="text-center">
@@ -24,7 +35,7 @@ const Auth: React.FC = () => {
                         Iniciar Sesión
                     </button>
                     <button
-                        onClick={() => setIsLogin(false)}
+                        onClick={() => handleTabChange(false)}
                         className={`w-1/2 py-2 text-sm font-semibold rounded-md transition-colors ${
                             !isLogin ? 'bg-white dark:bg-gray-800 shadow text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
