@@ -76,6 +76,7 @@ const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose, onSucc
                 await api.createEvent(eventData, user.id); // Pasar solo el ID
             }
             onSuccess();
+            onClose();
         } catch (error) {
             console.error("Failed to save event", error);
         } finally {
